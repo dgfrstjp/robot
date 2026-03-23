@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🤖 ロボット研究所</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060810;
+    --panel: #0c1120;
+    --border: #162840;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --accent3: #39ff14;
+    --yellow: #ffd600;
+    --pink: #e040fb;
+    --green: #06c755;
+    --text: #d0e8ff;
+    --muted: #4a6a8a;
+    --glow-cyan: 0 0 24px rgba(0,229,255,0.5);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
+    background-size: 44px 44px;
+    animation: gridScroll 25s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse at top, rgba(0,229,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes gridScroll {
+    from { transform: translateY(0); }
+    to   { transform: translateY(44px); }
+  }
+
+  .container {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 44px 18px 64px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+    animation: fadeDown 0.9s cubic-bezier(.22,1,.36,1);
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .robot-icon {
+    font-size: 80px;
+    display: block;
+    line-height: 1;
+    margin-bottom: 12px;
+    animation: float 3.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 28px rgba(0,229,255,0.7)) drop-shadow(0 0 60px rgba(0,229,255,0.3));
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(-1deg); }
+    50%      { transform: translateY(-10px) rotate(1deg); }
+  }
+
+  .lab-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-shadow: var(--glow-cyan);
+  }
+
+  .lab-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    margin-top: 6px;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,229,255,0.07);
+    border: 1px solid rgba(0,229,255,0.3);
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-top: 14px;
+    letter-spacing: 2px;
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: blink 1.2s ease-in-out infinite;
+    box-shadow: 0 0 6px var(--accent);
+  }
+
+  @keyframes blink {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.2; }
+  }
+
+  .mission-board {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 32px;
+    overflow: hidden;
+    animation: fadeUp 0.8s cubic-bezier(.22,1,.36,1) 0.15s both;
+    position: relative;
+  }
+
+  .mission-board::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,229,255,0.03) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .mission-header {
+    background: linear-gradient(90deg, rgba(0,229,255,0.12), transparent);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .mission-header-icon { font-size: 16px; }
+
+  .mission-header-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    flex: 1;
+  }
+
+  .mission-header-id {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .mission-body { padding: 20px; }
+
+  .mission-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .mission-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .step-num {
+    width: 32px; height: 32px;
+    border: 1.5px solid var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+    background: rgba(0,229,255,0.06);
+  }
+
+  .step-text {
+    font-size: 14px;
+    color: #90b8d8;
+    line-height: 1.4;
+  }
+
+  .step-text strong { color: var(--text); }
+
+  .mission-reward {
+    background: linear-gradient(90deg, rgba(255,214,0,0.08), transparent);
+    border: 1px solid rgba(255,214,0,0.25);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .reward-icon { font-size: 22px; }
+
+  .reward-text {
+    font-size: 13px;
+    color: var(--yellow);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .reward-text span {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba(255,214,0,0.6);
+    margin-top: 2px;
+  }
+
+  .section-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 17px 18px;
+    border-radius: 13px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+
+  .btn:hover::after { transform: translateX(100%); }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-cyan {
+    background: linear-gradient(135deg, #002d40, #003d56);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 4px 24px rgba(0,229,255,0.12), inset 0 1px 0 rgba(0,229,255,0.1);
+    animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.3s both;
+  }
+  .btn-cyan:hover { box-shadow: 0 8px 32px rgba(0,229,255,0.3), inset 0 1px 0 rgba(0,229,255,0.15); }
+
+  .btn-line {
+    background: linear-gradient(135deg, #081a0c, #0a2010);
+    border-color: var(--green);
+    color: var(--green);
+    box-shadow: 0 4px 24px rgba(6,199,85,0.1);
+    animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.5s both;
+  }
+  .btn-line:hover { box-shadow: 0 8px 32px rgba(6,199,85,0.28); }
+
+  .btn-lime {
+    background: linear-gradient(135deg, #081a08, #0a1f0a);
+    border-color: var(--accent3);
+    color: var(--accent3);
+    box-shadow: 0 4px 24px rgba(57,255,20,0.08);
+    animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.6s both;
+  }
+  .btn-lime:hover { box-shadow: 0 8px 32px rgba(57,255,20,0.22); }
+
+  .btn-orange {
+    background: linear-gradient(135deg, #241008, #30160a);
+    border-color: var(--accent2);
+    color: var(--accent2);
+    box-shadow: 0 4px 24px rgba(255,107,53,0.1);
+    animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.65s both;
+  }
+  .btn-orange:hover { box-shadow: 0 8px 32px rgba(255,107,53,0.28); }
+
+  .btn-yellow {
+    background: linear-gradient(135deg, #1e1800, #282200);
+    border-color: var(--yellow);
+    color: var(--yellow);
+    box-shadow: 0 4px 24px rgba(255,214,0,0.08);
+    animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.7s both;
+  }
+  .btn-yellow:hover { box-shadow: 0 8px 32px rgba(255,214,0,0.22); }
+
+  .btn-pink {
+    background: linear-gradient(135deg, #220d2a, #2e1038);
+    border-color: var(--pink);
+    color: var(--pink);
+    box-shadow: 0 4px 24px rgba(224,64,251,0.1);
+    animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.75s both;
+  }
+  .btn-pink:hover { box-shadow: 0 8px 32px rgba(224,64,251,0.28); }
+
+  .btn-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+
+  .btn-text { flex: 1; }
+  .btn-main { display: block; line-height: 1.2; }
+  .btn-sub  {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.6;
+    margin-top: 3px;
+  }
+
+  .btn-arrow { font-size: 18px; opacity: 0.35; }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0 24px;
+    animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.5s both;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+  .divider-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    white-space: nowrap;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 36px;
+    animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.9s both;
+  }
+
+  .footer-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-shadow: var(--glow-cyan);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .footer-text {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 2;
+  }
+
+  .scan-line {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--accent) 40%, #fff 50%, var(--accent) 60%, transparent 100%);
+    animation: scan 1.6s ease-out forwards;
+    z-index: 200;
+    pointer-events: none;
+  }
+
+  @keyframes scan {
+    0%   { top: 0; opacity: 1; }
+    85%  { opacity: 1; }
+    100% { top: 100vh; opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scan-line"></div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="robot-icon">🤖</span>
+    <div class="lab-title">ロボット研究所</div>
+    <div class="lab-sub">ROBOT LABORATORY — DIGIFOREST</div>
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      SYSTEM ONLINE
+    </div>
+  </div>
+
+  <!-- MISSION BOARD -->
+  <div class="mission-board">
+    <div class="mission-header">
+      <span class="mission-header-icon">📋</span>
+      <span class="mission-header-title">MISSION FILE</span>
+      <span class="mission-header-id">TOP SECRET</span>
+    </div>
+    <div class="mission-body">
+      <div class="mission-steps">
+        <div class="mission-step">
+          <div class="step-num">01</div>
+          <div class="step-text"><strong>ロボットを作る</strong> — キミだけのロボットが誕生！</div>
+        </div>
+        <div class="mission-step">
+          <div class="step-num">02</div>
+          <div class="step-text"><strong>写真を撮る</strong> — ロボットの記録を残せ</div>
+        </div>
+        <div class="mission-step">
+          <div class="step-num">03</div>
+          <div class="step-text"><strong>研究員申請する</strong> — 下のボタンから登録！</div>
+        </div>
+      </div>
+      <div class="mission-reward">
+        <span class="reward-icon">🏅</span>
+        <div class="reward-text">
+          全クリアで研究員認定！
+          <span>キミのロボットがロボット図鑑に載るよ</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 01 -->
+  <div class="section-label">▸ STEP 01 — 研究員になろう</div>
+  <div class="btn-group">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvEuixTxzoWe-hIwjc23tuxrESrDFKblRezXMKSA7y6IxGyA/viewform" class="btn btn-cyan">
+      <span class="btn-icon">🪪</span>
+      <span class="btn-text">
+        <span class="btn-main">研究員登録する</span>
+        <span class="btn-sub">ロボットに名前をつけて図鑑に載せよう！</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-label">保護者の方へ</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- 保護者向け -->
+  <div class="section-label">▸ お役立ち情報</div>
+  <div class="btn-group">
+
+    <a href="https://lin.ee/oL9z25j2" class="btn btn-line">
+      <span class="btn-icon">💬</span>
+      <span class="btn-text">
+        <span class="btn-main">公式LINE — お問い合わせ</span>
+        <span class="btn-sub">次回マルシェのお知らせもここから</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a href="https://shindan.dmobile.jp/" class="btn btn-lime">
+      <span class="btn-icon">📱</span>
+      <span class="btn-text">
+        <span class="btn-main">スマホ料金を無料診断する</span>
+        <span class="btn-sub">月々の通信費を見直してみませんか？</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a href="https://mypage.dmobile.jp/DJP644132?openExternalBrowser=1" class="btn btn-orange">
+      <span class="btn-icon">🔗</span>
+      <span class="btn-text">
+        <span class="btn-main">回線契約はこちらから</span>
+        <span class="btn-sub">お申し込み・プラン変更</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a href="https://drive.google.com/file/d/1QuvaFBehEa3Ct6AEhLR5ieuYYnJl8EpT/view" class="btn btn-yellow">
+      <span class="btn-icon">⭐</span>
+      <span class="btn-text">
+        <span class="btn-main">スマホレディのご案内</span>
+        <span class="btn-sub">副業でも本業でも！一緒に働きませんか？</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+    <a href="https://www.instagram.com/digiforestjp/" class="btn btn-pink">
+      <span class="btn-icon">📸</span>
+      <span class="btn-text">
+        <span class="btn-main">Instagram — デジフォレスト</span>
+        <span class="btn-sub">活動の最新情報をチェック！</span>
+      </span>
+      <span class="btn-arrow">›</span>
+    </a>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span class="footer-logo">ROBOT LABORATORY</span>
+    <p class="footer-text">
+      ご不明な点は公式LINEよりお気軽にどうぞ。<br>
+      © ロボット研究所 / デジフォレスト
+    </p>
+  </div>
+
+</div>
+</body>
+</html>
